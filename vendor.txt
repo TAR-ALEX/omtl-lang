@@ -1,15 +1,13 @@
 deb-init [
-    "deb http://packages.linuxmint.com vera main upstream import backport",
-    "deb http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse",
-    "deb http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse",
-    "deb http://archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse",
-    "deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse",
-    "deb http://archive.canonical.com/ubuntu/ jammy partner",
-    "deb http://ftp.us.debian.org/debian buster main ",
+    "deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse",
+    "deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse",
+    "deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse",
+    "deb http://security.ubuntu.com/ubuntu/ lunar-security main restricted universe multiverse",
+    "deb http://archive.canonical.com/ubuntu/ lunar partner",
 ],
 deb-recurse-limit 3,
 
-deb "llvm-14-dev" "./" "/vendor/llvm/",
+git "https://github.com/llvm/llvm-project.git" llvmorg-16.0.6 "./" "./vendor/llvm-project/",
 
 (git "https://github.com/TAR-ALEX/omtl_parser_cpp.git" master "./include/" "./vendor/include/",)
 

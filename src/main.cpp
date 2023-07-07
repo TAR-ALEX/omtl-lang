@@ -25,6 +25,10 @@ struct OmtlFunction{
     rptr<llvm::Value> val = nullptr;
 };
 
+struct OmtlArgumentMatcher{
+    
+};
+
 struct OmtlObject {
     rptr<llvm::Value> val = nullptr;
 
