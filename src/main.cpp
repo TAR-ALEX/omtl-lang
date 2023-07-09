@@ -1,10 +1,10 @@
-#include "llvm/ExecutionEngine/ExecutionEngine.h"
-#include "llvm/ExecutionEngine/GenericValue.h"
-#include "llvm/ExecutionEngine/MCJIT.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/ValueSymbolTable.h"
-#include "llvm/IR/Verifier.h"
-#include "llvm/Support/TargetSelect.h"
+// #include "llvm/ExecutionEngine/ExecutionEngine.h"
+// #include "llvm/ExecutionEngine/GenericValue.h"
+// #include "llvm/ExecutionEngine/MCJIT.h"
+// #include "llvm/IR/IRBuilder.h"
+// #include "llvm/IR/ValueSymbolTable.h"
+// #include "llvm/IR/Verifier.h"
+// #include "llvm/Support/TargetSelect.h"
 #include <deque>
 #include <estd/ptr.hpp>
 #include <iostream>
@@ -14,7 +14,7 @@
 #include "AutonameMap.h"
 
 using namespace estd::shortnames;
-using namespace llvm;
+// using namespace llvm;
 
 // Some declarations for future use.
 struct OmtlObject;
@@ -22,7 +22,7 @@ struct OmtlFunction;
 
 // This cannot be declared directly in code, this is only for internal representation, objects call these functions internally
 struct OmtlFunction{
-    rptr<llvm::Value> val = nullptr;
+    // rptr<llvm::Value> val = nullptr;
 };
 
 struct OmtlArgumentMatcher{
@@ -30,7 +30,7 @@ struct OmtlArgumentMatcher{
 };
 
 struct OmtlObject {
-    rptr<llvm::Value> val = nullptr;
+    // rptr<llvm::Value> val = nullptr;
 
     sptr<estd::BigDecimal> num = nullptr;
     sptr<std::string> str = nullptr;
@@ -50,7 +50,6 @@ struct OmtlObject {
     OmtlObject(estd::BigDecimal n) { num = n; }
     OmtlObject(std::string type, std::string name, AutonameMap<OmtlObject> members  = {}): name(name), type(type), members(members) {}
     // OmtlObject(std::string s) { str = s; }
-    OmtlObject(llvm::Value* v) { val = v; }
     static OmtlObject makeType(std::string s){
         OmtlObject v;
         v.type = s;
@@ -60,9 +59,9 @@ struct OmtlObject {
 
 class OmtlToIR {
 public:
-    llvm::LLVMContext context;
-    llvm::IRBuilder<> builder{context};
-    llvm::Module module{"omtl", context};
+    // llvm::LLVMContext context;
+    // llvm::IRBuilder<> builder{context};
+    // llvm::Module module{"omtl", context};
 
     std::deque<AutonameMap<OmtlObject>> scope = {{
         {"operator", "+"},
@@ -77,39 +76,11 @@ public:
     estd::ostream_proxy log{&std::cout};
 
     void compile(omtl::Element e) {
-        InitializeNativeTarget();
-        InitializeNativeTargetAsmPrinter();
-        // compileExtern();
         compileEntry(e);
     }
-    void compileExtern() {
-        auto outFn =
-            cast<Function>(module.getOrInsertFunction("out", builder.getVoidTy(), builder.getInt32Ty()).getCallee());
-
-        auto BB = BasicBlock::Create(context, "entry", outFn);
-        builder.SetInsertPoint(BB);
-
-        auto printFn = module.getOrInsertFunction(
-            "printf", FunctionType::get(builder.getInt32Ty(), PointerType::get(builder.getInt8Ty(), 0), true)
-        );
-
-        auto val = &*outFn->arg_begin();
-        auto fmt = builder.CreateGlobalStringPtr("%d\n", ".printf.fmt");
-        builder.CreateCall(printFn, {fmt, val});
-
-        builder.CreateRetVoid();
-        verifyFunction(*outFn);
-    }
     void compileEntry(omtl::Element e) {
-        auto startFn = cast<Function>(module.getOrInsertFunction("__start", builder.getVoidTy()).getCallee());
         log << "compiling entry\n";
-        auto BB = BasicBlock::Create(context, "entry", startFn);
-        builder.SetInsertPoint(BB);
-
         compileBlock(e);
-
-        builder.CreateRetVoid();
-        verifyFunction(*startFn);
     }
     OmtlObject getVarType(std::string name) {
         for (auto sc = scope.rbegin(); sc != scope.rend(); ++sc) {
@@ -182,7 +153,6 @@ public:
         OmtlObject v;
         v.type = getStatementType(statement).type;
         scope.back()[name] = v;
-        builder.CreateAlloca(builder.getInt32Ty(), nullptr, name);
     }
     void declareBlock(cptr<omtl::Element> block) {
         log << "declaring block\n";
@@ -224,7 +194,7 @@ public:
         // // auto R = ConstantInt::getIntegerValue(builder.getInt32Ty(), APInt(32, elem->getNumber().toInt(), true));
         // return builder.CreateFAdd(L, R, "addtmp");
     }
-    void dump() { module.print(llvm::outs(), nullptr); }
+    void dump() {  }
     void dumpScope() {
         log << "-------------------------------\n";
         for (auto sc = scope.rbegin(); sc != scope.rend(); ++sc) {

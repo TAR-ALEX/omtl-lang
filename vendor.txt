@@ -7,7 +7,7 @@ deb-init [
 ],
 deb-recurse-limit 3,
 
-git "https://github.com/llvm/llvm-project.git" llvmorg-16.0.6 "./" "./vendor/llvm-project/",
+(git "https://github.com/llvm/llvm-project.git" llvmorg-16.0.6 "./" "./vendor/llvm-project/"),
 
 (git "https://github.com/TAR-ALEX/omtl_parser_cpp.git" master "./include/" "./vendor/include/",)
 
