@@ -97,7 +97,5 @@ namespace omtl {
         std::vector<Token> tokenize(std::string filename);
         std::string reconstruct(std::vector<Token>& tokens);
     };
-
-#include <omtl/Tokenizer.ipp>
-
 } // namespace omtl
+#include <omtl/Tokenizer.ipp>

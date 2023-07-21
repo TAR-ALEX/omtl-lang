@@ -122,5 +122,6 @@ namespace omtl {
     inline static Element Tuple(std::deque<std::pair<std::string, Element>> in = {}) { return Element(in); }
     inline static Element Statement(std::deque<Element> in = {}) { return Element(in); }
 
-#include <omtl/ParseTree.ipp>
 } // namespace omtl
+
+#include <omtl/ParseTree.ipp>

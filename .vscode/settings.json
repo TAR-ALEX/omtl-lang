@@ -80,6 +80,10 @@
         "codecvt": "cpp",
         "iomanip": "cpp",
         "semaphore": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "strstream": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "span": "cpp"
     }
 }
