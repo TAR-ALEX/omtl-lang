@@ -24,8 +24,8 @@ int main() {
             },
         };
 
-        std::string target = "bmw{Car} [\n"
-                             "  fuelTank{Reservoir} [\n"
+        std::string target = "bmw{Car}: [\n"
+                             "  fuelTank{Reservoir}: [\n"
                              "    fluidType{String}: gasoline\n"
                              "    volumeLiters{Number}: 10\n"
                              "  ]\n"
@@ -37,14 +37,58 @@ int main() {
         return oTest.toString() == target;
     });
 
-    OmtlFunction fTest{
-        "[x: Number, y: String]",
-        [](OmtlObject args) { std::cout << args.toString(); },
-    };
+    test.testLambda([]() {
+        std::string inArgs;
+        std::string outArgs;
+        OmtlFunction fTest{
+            "[x: Number, y: String, z: [x: Number, y: String]]",
+            [&](OmtlObject* args) { outArgs = args->toString(); },
+        };
 
-    std::cout << fTest.argTemplate.toString() << std::endl;
+        cptr<OmtlObject> args = new OmtlObject{
+            "Tuple",
+            "arguments",
+            {new OmtlNumericObject{"x", 0},
+             new OmtlStringObject{"y", "testString"},
+             OmtlObject{
+                 "Tuple",
+                 "z",
+                 {
+                     new OmtlNumericObject{"x", "11"},
+                     new OmtlStringObject{"y", "testString2"},
+                 },
+             }},
+        };
+        inArgs = args->toString();
 
-    test.testBool(true);
+        fTest.call(args.get());
+
+        // std::cout << fTest.argTemplate.toString() << std::endl;
+        return inArgs == outArgs;
+    });
+
+    test.testLambda([]() {
+        OmtlFunction fTest{
+            "[x: Number, y: String, z: [x: Number, y: String]]",
+            [&](OmtlObject* args) {},
+        };
+
+        cptr<OmtlObject> args = new OmtlObject{
+            "Tuple",
+            "arguments",
+            {new OmtlNumericObject{"x", 0},
+             new OmtlStringObject{"y", "testString"},
+             OmtlObject{
+                 "Tuple",
+                 "z",
+             }},
+        };
+        try {
+            fTest.call(args.get());
+        } catch (std::runtime_error& e) { return estd::string_util::contains(e.what(), "mismatch", true); }
+        return false;
+    });
+
     std::cout << test.getStats() << std::endl;
     return 0;
 }

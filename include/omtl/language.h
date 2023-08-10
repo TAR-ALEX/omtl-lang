@@ -16,6 +16,7 @@ struct OmtlFunction;
 // omtl object is an object or an overloadable function like object
 struct OmtlObject : estd::clonable {
     std::string name; // var name, should not be changed after adding it to an AutonameMap
+    // The only true reason we need a name here is for diagnostic purposes. The name used in the map is what really matters.
     std::string type; // name of class that created this.
 
     rptr<OmtlObject> parent; // useful for functions that need access to parent (instance) vars.
@@ -51,7 +52,7 @@ struct OmtlObject : estd::clonable {
 
         for (auto& [k, v] : publicMembers) { ss << v->toString() << std::endl; }
         for (auto& [k, v] : privateMembers) { ss << v->toString() << std::endl; }
-        return name + "{" + type + "} [\n" + estd::string_util::indent(ss.str(), "  ") + "]";
+        return name + "{" + type + "}: [\n" + estd::string_util::indent(ss.str(), "  ") + "]";
     }
 };
 
@@ -90,12 +91,37 @@ struct OmtlNumericObject : public OmtlObject {
 struct OmtlFunction { // notice that this is not an object
     std::string arg;
     OmtlObject argTemplate{"Tuple", "arguments"};
+    std::function<void(OmtlObject*)> impl;
 
     bool checkMatches(OmtlObject o) {}
 
-    void call(OmtlObject passed) {}
+    void call(OmtlObject* passed) {
+        std::function<bool(OmtlObject*, OmtlObject*)> isSame;
+        isSame = [&](OmtlObject* left, OmtlObject* right) {
+            if(left->type != right->type) return false;
+            if(left->type == "Tuple") {
+                if(left->publicMembers.size() != right->publicMembers.size()){
+                    return false;
+                }
+                for(auto& [k, v1]: left->publicMembers){
+                    if(right->publicMembers.count(k) == 0) return false;
+                    auto& v2 = right->publicMembers[k];
+                    if(!isSame(v1.get(), v2.get())){
+                        return false;
+                    }
+                }
+            }
+           
+            return true;
+        };
+        if(isSame(passed, &argTemplate)){
+            impl(passed);
+        }else{
+            throw std::runtime_error("Cannot call function argument mismatch!");
+        }
+    }
 
-    OmtlFunction(std::string argumentMatcher, std::function<void(OmtlObject)>) {
+    OmtlFunction(std::string argumentMatcher, std::function<void(OmtlObject*)> f) {
         std::stringstream sfstream(argumentMatcher);
         auto tokens = omtl::Tokenizer{}.tokenize(sfstream, "private");
         auto elements = omtl::ParseTreeBuilder{}.buildParseTree(tokens);
@@ -111,21 +137,17 @@ struct OmtlFunction { // notice that this is not an object
                     } else {
                         throw std::runtime_error("Unknown type " + v.getName());
                     }
-
-                    //  std::cout << k << ": " << v.getName() << "\n";// get raw?
-                } else {
-                    if (!v.isTuple()) {
-                        std::cerr << v.getDiagnosticString() << std::endl;
-                        exit(0);
-                        throw std::runtime_error("Invalid type");
-                    }
-                    writeTo->insert(OmtlObject{"", k});
-                    parseMatcher(&(writeTo->at(k)->publicMembers), v);
+                } else if (v.isStatement() && v[0]->isTuple()){
+                    writeTo->insert(OmtlObject{"Tuple", k});
+                    parseMatcher(&(writeTo->at(k)->publicMembers), v[0].value());
+                }else{
+                    // std::cerr << v.getDiagnosticString() << std::endl;
+                    throw std::runtime_error("Invalid type");
                 }
             }
         };
-
-        parseMatcher(&argTemplate.publicMembers, *elements[0][0]);
+        parseMatcher(&argTemplate.publicMembers, *elements[0][0]); // root code's first statment
+        impl = f;
     }
 
     bool operator<(const OmtlFunction& right) const { // needed for sorting in a set
