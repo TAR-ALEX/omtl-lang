@@ -51,10 +51,11 @@ namespace omtl {
     private:
         friend class ParseTreeBuilder;
         estd::clone_ptr<std::deque<std::pair<std::string, Element>>> tuple;
-        estd::clone_ptr<std::deque<Element>> statement;
+        estd::clone_ptr<std::deque<std::pair<std::string, Element>>> statement;
         estd::clone_ptr<Token> value;
 
         inline Element& getSingleElement();
+        inline void reindexStatment();
 
     public:
         Element();
@@ -67,6 +68,36 @@ namespace omtl {
         std::string location = "";
 
         std::string getDiagnosticString();
+
+
+        decltype(auto) begin() {
+            if (tuple) {
+                return tuple.begin();
+            } else {
+                return statement.begin();
+            }
+        }
+        decltype(auto) begin() const {
+            if (tuple) {
+                return tuple.begin();
+            } else {
+                return statement.begin();
+            }
+        }
+        decltype(auto) end() {
+            if (tuple) {
+                return tuple.end();
+            } else {
+                return statement.end();
+            }
+        }
+        decltype(auto) end() const {
+            if (tuple) {
+                return tuple.end();
+            } else {
+                return statement.end();
+            }
+        }
 
         size_t size();
         bool onlyContains(std::set<std::string> names);

@@ -18,7 +18,14 @@ link_directories(${PROJECT_SOURCE_DIR}/vendor/lib)
 
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*" "${PROJECT_SOURCE_DIR}/include/*" "${PROJECT_SOURCE_DIR}/vendor-mod/include/*")
 file(GLOB_RECURSE VENDOR_SOURCES CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/vendor/src/*" "${PROJECT_SOURCE_DIR}/vendor/include/*" "${PROJECT_SOURCE_DIR}/vendor-mod/include/*")
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/test/*" "${PROJECT_SOURCE_DIR}/include/*" "${PROJECT_SOURCE_DIR}/vendor-mod/include/*")
 
-add_executable(${PROJECT_NAME} ${APP_SOURCES} ${VENDOR_SOURCES})
+add_executable(${PROJECT_NAME} ${APP_SOURCES} ${VENDOR_SOURCES} ./entry/main.cpp)
 target_compile_options(${PROJECT_NAME} PRIVATE)
 target_link_libraries(${PROJECT_NAME} pthread)
+
+
+add_executable("${PROJECT_NAME}_TESTS" ${APP_SOURCES} ${VENDOR_SOURCES} ./entry/tests.cpp)
+target_compile_options("${PROJECT_NAME}_TESTS" PRIVATE)
+target_link_libraries("${PROJECT_NAME}_TESTS" pthread)
+

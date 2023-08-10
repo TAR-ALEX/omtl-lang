@@ -75,7 +75,7 @@ namespace omtl {
 
     Element ParseTreeBuilder::parseStatement(std::vector<Token>& tokens, size_t& i) {
         Element result;
-        result.statement = std::deque<Element>();
+        result.statement = std::deque<std::pair<std::string, Element>>();
         if (tokens.size() > i) result.location = tokens[i].location;
         for (;;) {
             if (i >= tokens.size()) { throw std::runtime_error("statement did not end: " + result.location); } // error
@@ -84,22 +84,23 @@ namespace omtl {
             if (tokens[i].getRaw() == "[") {
                 if (isTuple(tokens, i)) {
                     Element elem = parseTuple(tokens, i);
-                    result.statement->push_back(elem);
+                    result.statement->push_back({std::to_string(result.statement->size()), elem});
                 } else {
                     Element elem;
                     i++;
                     elem = parseStatement(tokens, i);
                     i++;
-                    result.statement->push_back(elem);
+                    result.statement->push_back({std::to_string(result.statement->size()), elem});
                 }
             } else {
                 Element elem;
                 elem.value = tokens[i];
                 elem.location = tokens[i].location;
-                result.statement->push_back(elem);
+                result.statement->push_back({std::to_string(result.statement->size()), elem});
                 i++;
             }
         }
+        result.reindexStatment();
         return result;
     }
 
@@ -166,7 +167,10 @@ namespace omtl {
 
     Element::Element(std::deque<std::pair<std::string, Element>> t) { tuple = t; }
 
-    Element::Element(std::deque<Element> s) { statement = s; }
+    Element::Element(std::deque<Element> s) {
+        statement = std::deque<std::pair<std::string, Element>>();
+        for (size_t i = 0; i < s.size(); i++) { statement->push_back({std::to_string(i), s[i]}); }
+    }
 
     Element::Element(const Element& e) {
         tuple = e.tuple;
@@ -201,7 +205,7 @@ namespace omtl {
         } else if (this->statement != nullptr) {
             string result = "";
             bool notFirst = false;
-            for (Element e : this->statement) {
+            for (auto& [k, e] : this->statement) {
                 if (notFirst) { result += " "; }
                 notFirst = true;
                 if (e.isStatement()) {
@@ -225,6 +229,11 @@ namespace omtl {
                 if (e.tuple[i].first == name || name == std::to_string(i)) { return e.tuple[i].second; }
             }
         }
+        if (e.statement != nullptr) {
+            for (size_t i = 0; i < e.statement->size(); i++) {
+                if (e.statement[i].first == name) { return e.statement[i].second; }
+            }
+        }
         return nullptr;
     }
 
@@ -235,7 +244,7 @@ namespace omtl {
             return e.tuple[id].second;
         } else if (e.statement != nullptr) {
             if (id >= e.statement->size()) return nullptr;
-            return e.statement[id];
+            return e.statement[id].second;
         }
         return nullptr;
     }
@@ -294,6 +303,10 @@ namespace omtl {
         return false;
     }
 
+    inline void Element::reindexStatment() {
+        for (size_t i = 0; i < statement->size(); i++) { statement[i].first = std::to_string(i); }
+    }
+
     Element Element::popFront() {
         if (tuple != nullptr) {
             Element t = tuple->front().second;
@@ -301,16 +314,23 @@ namespace omtl {
             return t;
         }
         if (statement != nullptr) {
-            Element t = statement->front();
+            Element t = statement->front().second;
             statement->pop_front();
+            reindexStatment();
             return t;
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushFront(Element e) { pushFront("", e); }
+    void Element::pushFront(Element e) {
+        pushFront("", e);
+    }
     void Element::pushFront(std::string n, Element e) {
         if (tuple != nullptr) { tuple->push_front({n, e}); }
-        if (statement != nullptr) { statement->push_front(e); }
+        if (statement != nullptr) {
+            if (n != "") throw std::runtime_error("Error: cannot use this function with non empty string on statment.");
+            statement->push_front({n, e});
+            reindexStatment();
+        }
     }
     Element Element::popBack() {
         if (tuple != nullptr) {
@@ -319,16 +339,23 @@ namespace omtl {
             return t;
         }
         if (statement != nullptr) {
-            Element t = statement->back();
+            Element t = statement->back().second;
             statement->pop_back();
+            reindexStatment();
             return t;
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushBack(Element e) { pushBack("", e); }
+    void Element::pushBack(Element e) {
+        pushBack("", e);
+    }
     void Element::pushBack(std::string n, Element e) {
         if (tuple != nullptr) { tuple->push_back({n, e}); }
-        if (statement != nullptr) { statement->push_back(e); }
+        if (statement != nullptr) {
+            if (n != "") throw std::runtime_error("Error: cannot use this function with non empty string on statment.");
+            statement->push_back({n, e});
+            reindexStatment();
+        }
     }
 
     void Element::popBack(size_t n) {
@@ -374,7 +401,7 @@ namespace omtl {
     std::string Element::getValue() { return getToken().getValue(); }
     std::string Element::getRaw() { return getToken().getRaw(); }
     inline Element& Element::getSingleElement() {
-        if (statement != nullptr && statement->size() == 1) { return statement[0]; }
+        if (statement != nullptr && statement->size() == 1) { return statement[0].second; }
         return *this;
     }
 } // namespace omtl
