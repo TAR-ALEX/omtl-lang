@@ -48,16 +48,18 @@ int main() {
         cptr<OmtlObject> args = new OmtlObject{
             "Tuple",
             "arguments",
-            {new OmtlNumericObject{"x", 0},
-             new OmtlStringObject{"y", "testString"},
-             OmtlObject{
-                 "Tuple",
-                 "z",
-                 {
-                     new OmtlNumericObject{"x", "11"},
-                     new OmtlStringObject{"y", "testString2"},
-                 },
-             }},
+            {
+                new OmtlNumericObject{"x", 0},
+                new OmtlStringObject{"y", "testString"},
+                OmtlObject{
+                    "Tuple",
+                    "z",
+                    {
+                        new OmtlNumericObject{"x", "11"},
+                        new OmtlStringObject{"y", "testString2"},
+                    },
+                },
+            },
         };
         inArgs = args->toString();
 
@@ -76,12 +78,14 @@ int main() {
         cptr<OmtlObject> args = new OmtlObject{
             "Tuple",
             "arguments",
-            {new OmtlNumericObject{"x", 0},
-             new OmtlStringObject{"y", "testString"},
-             OmtlObject{
-                 "Tuple",
-                 "z",
-             }},
+            {
+                new OmtlNumericObject{"x", 0},
+                new OmtlStringObject{"y", "testString"},
+                OmtlObject{
+                    "Tuple",
+                    "z",
+                },
+            },
         };
         try {
             fTest.call(args.get());
