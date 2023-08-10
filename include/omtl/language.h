@@ -41,12 +41,6 @@ struct OmtlObject : estd::clonable {
 
     virtual clonable* clone() const { return new OmtlObject(*this); }
 
-    static OmtlObject makeType(std::string s) { // delete this.
-        OmtlObject v;
-        v.type = s;
-        return v;
-    }
-
     virtual std::string toString() {
         std::stringstream ss;
 
