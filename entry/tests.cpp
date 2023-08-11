@@ -70,11 +70,6 @@ int main() {
     });
 
     test.testLambda([]() {
-        OmtlFunction fTest{
-            "[x: Number, y: String, z: [x: Number, y: String]]",
-            [&](OmtlObject* args) {},
-        };
-
         cptr<OmtlObject> args = new OmtlObject{
             "Tuple",
             "arguments",
@@ -87,10 +82,22 @@ int main() {
                 },
             },
         };
+        bool testFailed = false;
+        OmtlFunction fTest{
+            "[x: Number, y: String, z: [x: Number, y: String]]",
+            [&](OmtlObject* args) {
+                if (!args->publicMembers.count("x")) { testFailed = true; }
+                if (!args->publicMembers.count("y")) { testFailed = true; }
+                if (!args->publicMembers.count("z")) { testFailed = true; }
+                if (!args->publicMembers.at("z")->publicMembers.count("x")) { testFailed = true; }
+                if (!args->publicMembers.at("z")->publicMembers.count("y")) { testFailed = true; }
+                if (args->publicMembers.at("z")->publicMembers.count("z")) { testFailed = true; }
+            },
+        };
         try {
             fTest.call(args.get());
         } catch (std::runtime_error& e) { return estd::string_util::contains(e.what(), "mismatch", true); }
-        return false;
+        return !testFailed;
     });
 
     std::cout << test.getStats() << std::endl;
