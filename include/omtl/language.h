@@ -87,30 +87,24 @@ struct OmtlFunction { // notice that this is not an object
     OmtlObject argTemplate{"Tuple", "arguments"};
     std::function<void(OmtlObject*)> impl;
 
-    bool checkMatches(OmtlObject o) {}
-
     void call(OmtlObject* passed) {
         std::function<bool(OmtlObject*, OmtlObject*)> isSame;
         isSame = [&](OmtlObject* left, OmtlObject* right) {
-            if(left->type != right->type) return false;
-            if(left->type == "Tuple") {
-                if(left->publicMembers.size() != right->publicMembers.size()){
-                    return false;
-                }
-                for(auto& [k, v1]: left->publicMembers){
-                    if(right->publicMembers.count(k) == 0) return false;
+            if (left->type != right->type) return false;
+            if (left->type == "Tuple") {
+                if (left->publicMembers.size() != right->publicMembers.size()) { return false; }
+                for (auto& [k, v1] : left->publicMembers) {
+                    if (right->publicMembers.count(k) == 0) return false;
                     auto& v2 = right->publicMembers[k];
-                    if(!isSame(v1.get(), v2.get())){
-                        return false;
-                    }
+                    if (!isSame(v1.get(), v2.get())) { return false; }
                 }
             }
-           
+
             return true;
         };
-        if(isSame(passed, &argTemplate)){
+        if (isSame(passed, &argTemplate)) {
             impl(passed);
-        }else{
+        } else {
             throw std::runtime_error("Cannot call function argument mismatch!");
         }
     }
@@ -131,10 +125,10 @@ struct OmtlFunction { // notice that this is not an object
                     } else {
                         throw std::runtime_error("Unknown type " + v.getName());
                     }
-                } else if (v.isStatement() && v[0]->isTuple()){
+                } else if (v.isStatement() && v[0]->isTuple()) {
                     writeTo->insert(OmtlObject{"Tuple", k});
                     parseMatcher(&(writeTo->at(k)->publicMembers), v[0].value());
-                }else{
+                } else {
                     // std::cerr << v.getDiagnosticString() << std::endl;
                     throw std::runtime_error("Invalid type");
                 }
@@ -144,7 +138,7 @@ struct OmtlFunction { // notice that this is not an object
         impl = f;
     }
 
-    bool operator<(const OmtlFunction& right) const { // needed for sorting in a set
+    bool operator<(const OmtlFunction& right) const { // needed for sorting in a set, used by functor
         return arg < right.arg;
     }
 
