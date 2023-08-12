@@ -41,7 +41,7 @@ int main() {
         std::string inArgs;
         std::string outArgs;
         OmtlFunction fTest{
-            "[x: Number, y: String, z: [x: Number, y: String]]",
+            "[x: Number, Number, y: String, z: [x: Number, y: String]]",
             [&](OmtlObject* args) { outArgs = args->toString(); },
         };
 
@@ -49,9 +49,10 @@ int main() {
             "Tuple",
             "arguments",
             {
+                new OmtlNumericObject{"0", 0},
                 new OmtlNumericObject{"x", 0},
                 new OmtlStringObject{"y", "testString"},
-                OmtlObject{
+                new OmtlObject{
                     "Tuple",
                     "z",
                     {
@@ -76,9 +77,13 @@ int main() {
             {
                 new OmtlNumericObject{"x", 0},
                 new OmtlStringObject{"y", "testString"},
-                OmtlObject{
+                new OmtlObject{
                     "Tuple",
                     "z",
+                    {
+                        new OmtlNumericObject{"x", "11"},
+                        new OmtlStringObject{"y", "testString2"},
+                    },
                 },
             },
         };
@@ -93,6 +98,31 @@ int main() {
                 if (!args->publicMembers.at("z")->publicMembers.count("y")) { testFailed = true; }
                 if (args->publicMembers.at("z")->publicMembers.count("z")) { testFailed = true; }
             },
+        };
+        fTest.call(args.get());
+        return !testFailed;
+    });
+
+    test.testLambda([]() {
+        cptr<OmtlObject> args = new OmtlObject{
+            "Tuple",
+            "arguments",
+            {
+                new OmtlNumericObject{"x", 0},
+                new OmtlStringObject{"y", "testString"},
+                new OmtlObject{
+                    "Tuple",
+                    "z",
+                    {
+                        new OmtlNumericObject{"x", "11"},
+                    },
+                },
+            },
+        };
+        bool testFailed = false;
+        OmtlFunction fTest{
+            "[x: Number, y: String, z: [x: Number, y: String]]",
+            [&](OmtlObject* args) { testFailed = true; },
         };
         try {
             fTest.call(args.get());

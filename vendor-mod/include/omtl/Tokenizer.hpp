@@ -96,6 +96,13 @@ namespace omtl {
         std::vector<Token> tokenize(std::istream& infile, std::string filename = "");
         std::vector<Token> tokenize(std::string filename);
         std::string reconstruct(std::vector<Token>& tokens);
+
+        //filename, row, column
+        std::function<std::string(std::string, long, long)> locationFormatFunc =
+            [](std::string filename, long row, long col) {
+                // return "(file: " + filename + ", line: " + std::to_string(row) + ", column: " + std::to_string(col) + ")";
+                return "("+filename + ":" + std::to_string(row)+":"+std::to_string(col)+")";
+            };
     };
 } // namespace omtl
 #include <omtl/Tokenizer.ipp>

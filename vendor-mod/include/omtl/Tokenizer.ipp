@@ -71,14 +71,7 @@ namespace omtl {
         int charachterNumber = 0;
 
         const auto updateLocation = [&]() {
-            std::stringstream ss;
-            if (filename != "") {
-                ss << "(file: " << filename << " ";
-            } else {
-                ss << "(";
-            }
-            ss << "line: " << lineNumber << " column: " << charachterNumber << ")";
-            token.location = ss.str();
+            token.location = locationFormatFunc(filename, lineNumber, charachterNumber);
         };
 
         const auto insertToken = [&](Token t) {

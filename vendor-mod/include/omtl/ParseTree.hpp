@@ -56,6 +56,7 @@ namespace omtl {
 
         inline Element& getSingleElement();
         inline void reindexStatment();
+        inline void reindexTuple();
 
     public:
         Element();
@@ -103,8 +104,8 @@ namespace omtl {
         bool onlyContains(std::set<std::string> names);
         bool contains(std::string name);
         bool contains(size_t id);
-        estd::clone_ptr<Element> operator[](std::string name);
-        estd::clone_ptr<Element> operator[](size_t id);
+        estd::clone_ptr<Element> operator[](std::string name); // for iterating the elements based on naming
+        estd::clone_ptr<Element> operator[](size_t id); // for iterating over the elements as physically ordered
         std::string getLabel(size_t id);
 
         Element slice(size_t left, size_t right = SIZE_MAX);

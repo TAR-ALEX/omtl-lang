@@ -148,6 +148,7 @@ namespace omtl {
             result.tuple->push_back(std::pair<std::string, Element>(name, statement));
         }
 
+        result.reindexTuple();
         return result;
     }
 
@@ -306,11 +307,23 @@ namespace omtl {
     inline void Element::reindexStatment() {
         for (size_t i = 0; i < statement->size(); i++) { statement[i].first = std::to_string(i); }
     }
+    inline void Element::reindexTuple() {
+        int idx = 0;
+        for (size_t i = 0; i < tuple->size(); i++) {
+            // if it is either a number or an empty string.
+            // number labels cannot be added to tuples, they are instead just not labled.
+            if (tuple[i].first.empty() || tuple[i].first.find_first_not_of("0123456789") == std::string::npos) {
+                tuple[i].first = std::to_string(idx);
+                idx++;
+            }
+        }
+    }
 
     Element Element::popFront() {
         if (tuple != nullptr) {
             Element t = tuple->front().second;
             tuple->pop_front();
+            reindexTuple();
             return t;
         }
         if (statement != nullptr) {
@@ -321,11 +334,12 @@ namespace omtl {
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushFront(Element e) {
-        pushFront("", e);
-    }
+    void Element::pushFront(Element e) { pushFront("", e); }
     void Element::pushFront(std::string n, Element e) {
-        if (tuple != nullptr) { tuple->push_front({n, e}); }
+        if (tuple != nullptr) {
+            tuple->push_front({n, e});
+            reindexTuple();
+        }
         if (statement != nullptr) {
             if (n != "") throw std::runtime_error("Error: cannot use this function with non empty string on statment.");
             statement->push_front({n, e});
@@ -336,6 +350,7 @@ namespace omtl {
         if (tuple != nullptr) {
             Element t = tuple->back().second;
             tuple->pop_back();
+            reindexTuple();
             return t;
         }
         if (statement != nullptr) {
@@ -346,11 +361,12 @@ namespace omtl {
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushBack(Element e) {
-        pushBack("", e);
-    }
+    void Element::pushBack(Element e) { pushBack("", e); }
     void Element::pushBack(std::string n, Element e) {
-        if (tuple != nullptr) { tuple->push_back({n, e}); }
+        if (tuple != nullptr) {
+            tuple->push_back({n, e});
+            reindexTuple();
+        }
         if (statement != nullptr) {
             if (n != "") throw std::runtime_error("Error: cannot use this function with non empty string on statment.");
             statement->push_back({n, e});
