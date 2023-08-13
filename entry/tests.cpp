@@ -5,7 +5,7 @@
 int main() {
     UnitTests test;
 
-    test.testLambda([]() {
+    test.testBlock({
         OmtlObject oTest{
             "Car",
             "bmw",
@@ -37,7 +37,7 @@ int main() {
         return oTest.toString() == target;
     });
 
-    test.testLambda([]() {
+    test.testBlock({
         std::string inArgs;
         std::string outArgs;
         OmtlFunction fTest{
@@ -70,7 +70,7 @@ int main() {
         return inArgs == outArgs;
     });
 
-    test.testLambda([]() {
+    test.testBlock({
         cptr<OmtlObject> args = new OmtlObject{
             "Tuple",
             "arguments",
@@ -103,7 +103,7 @@ int main() {
         return !testFailed;
     });
 
-    test.testLambda([]() {
+    test.testBlock({
         cptr<OmtlObject> args = new OmtlObject{
             "Tuple",
             "arguments",
