@@ -24,16 +24,16 @@ int main() {
             },
         };
 
-        std::string target = "bmw{Car}: [\n"
-                             "  fuelTank{Reservoir}: [\n"
-                             "    fluidType{String}: gasoline\n"
-                             "    volumeLiters{Number}: 10\n"
-                             "  ]\n"
-                             "  modelName{String}: 330ci\n"
-                             "  numHorsepower{Number}: 250\n"
-                             "  numwheels{Number}: 4\n"
+        std::string target = "Car(bmw): [\n"
+                             "  Reservoir(fuelTank): [\n"
+                             "    String(fluidType): gasoline, \n"
+                             "    Number(volumeLiters): 10, \n"
+                             "  ], \n"
+                             "  String(modelName): 330ci, \n"
+                             "  Number(numHorsepower): 250, \n"
+                             "  Number(numwheels): 4, \n"
                              "]";
-        // std::cout << oTest.toString() << std::endl;
+        //std::cout << oTest.toString() << std::endl;
         return oTest.toString() == target;
     });
 

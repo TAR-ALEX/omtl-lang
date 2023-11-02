@@ -28,6 +28,4 @@ public:
     T& operator[](std::string&& k){
         return std::map<std::string, T>::at(k);
     }
-
-    //implement operator []
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <AutonameMap.h>
 #include <deque>
 #include <estd/ptr.hpp>
@@ -7,6 +9,7 @@
 #include <omtl/ParseTree.hpp>
 #include <omtl/Tokenizer.hpp>
 #include <sstream>
+#include <omtl/argumentMatching.h>
 
 using namespace estd::shortnames;
 // Some declarations for future use.
@@ -15,21 +18,24 @@ struct OmtlFunction;
 
 // omtl object is an object or an overloadable function like object
 struct OmtlObject : estd::clonable {
-    std::string name; // var name, should not be changed after adding it to an AutonameMap
-    // The only true reason we need a name here is for diagnostic purposes. The name used in the map is what really matters.
-    std::string type; // name of class that created this.
+    std::string name; // internal var name, should not be changed after adding it to an AutonameMap
+    // The only true reason we need a name here is for debug purposes. The name used in the map is what really matters.
 
+    std::string type; // name of class that created this. aka the type
+
+    //FIXME: investigate if the parent can be removed from here and only kept for the functor.
     rptr<OmtlObject> parent; // useful for functions that need access to parent (instance) vars.
     // aka, object to the left using the dot syntax in C++ like objects. So far, only functors should use this.
+    // could be null
 
-    AutonameMap<cptr<OmtlObject>> privateMembers; // member variables and functions.
-    AutonameMap<cptr<OmtlObject>> publicMembers;
+    AutonameMap<cptr<OmtlObject>> privateMembers; // private member variables and functions.
+    AutonameMap<cptr<OmtlObject>> publicMembers; // public variables and functions.
 
     // Objects can take arguments. in tuples or by passing a single object to its right.
-    // Without the tuple syntax there can be some ambiguity. (a possible solution is to not allow parameters without tuples if there are member variables)
+    // Without the tuple syntax there can be some ambiguity. (a possible solution is to not allow parameters without tuples if there are member variables/functions)
     // This basically makes the functors a special case.
-    OmtlObject() {}
-    OmtlObject(
+    inline OmtlObject(): name("Null"), type("Null") {}
+    inline OmtlObject(
         std::string type,
         std::string name,
         AutonameMap<cptr<OmtlObject>> publicMembers = {},
@@ -38,18 +44,26 @@ struct OmtlObject : estd::clonable {
         name(name),
         type(type), privateMembers(privateMembers), publicMembers(publicMembers) {}
 
+    virtual cptr<OmtlObject> call(cptr<OmtlObject> passed){
+        // error cannot call this object
+        //FIXME: add return type 
+        return new OmtlObject();
+    }
+
 
     virtual clonable* clone() const { return new OmtlObject(*this); }
 
     virtual std::string toString() {
         std::stringstream ss;
 
-        for (auto& [k, v] : publicMembers) { ss << v->toString() << std::endl; }
-        for (auto& [k, v] : privateMembers) { ss << v->toString() << std::endl; }
-        return name + "{" + type + "}: [\n" + estd::string_util::indent(ss.str(), "  ") + "]";
+        for (auto& [k, v] : publicMembers) { ss << v->toString() << ", " << std::endl; }
+        for (auto& [k, v] : privateMembers) { ss << v->toString() << ", " << std::endl; }
+        return type + "(" + name + "): [\n" + estd::string_util::indent(ss.str(), "  ") + "]";
     }
 };
 
+// TODO: investigate is this is needed
+// not sure if this is needed yet, can use the generic object with the type populated as Null
 struct OmtlNullObject : public OmtlObject {
     OmtlNullObject() { type = "Null"; }
     virtual std::string toString() { return "Null"; }
@@ -60,11 +74,13 @@ struct OmtlNullObject : public OmtlObject {
 struct OmtlStringObject : public OmtlObject {
     std::string data;
 
+    // TODO: add all member functions related to strings.
+
     OmtlStringObject(std::string name, std::string data = "") : data{data} {
         this->name = name;
         this->type = "String";
     }
-    virtual std::string toString() { return name + "{" + type + "}: " + data; }
+    virtual std::string toString() { return type + "(" + name + "): " + data; }
 
     virtual clonable* clone() const { return new OmtlStringObject(*this); }
 };
@@ -72,11 +88,13 @@ struct OmtlStringObject : public OmtlObject {
 struct OmtlNumericObject : public OmtlObject {
     estd::BigDecimal data;
 
+    // TODO: add all member functions related to numbers
+
     OmtlNumericObject(std::string name, estd::BigDecimal d = 0) : data{d} {
         this->name = name;
         this->type = "Number";
     }
-    virtual std::string toString() { return name + "{" + type + "}: " + data.toString(); }
+    virtual std::string toString() { return type + "(" + name + "): " + data.toString(); }
 
     virtual clonable* clone() const { return new OmtlNumericObject(*this); }
 };

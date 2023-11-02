@@ -64,35 +64,35 @@ namespace omtl {
         Element(std::deque<std::pair<std::string, Element>> t);
         Element(std::deque<Element> s);
         Element(const Element& e);
-        ~Element() {}
+        inline ~Element() {}
 
         std::string location = "";
 
         std::string getDiagnosticString();
 
 
-        decltype(auto) begin() {
+        inline decltype(auto) begin() {
             if (tuple) {
                 return tuple.begin();
             } else {
                 return statement.begin();
             }
         }
-        decltype(auto) begin() const {
+        inline decltype(auto) begin() const {
             if (tuple) {
                 return tuple.begin();
             } else {
                 return statement.begin();
             }
         }
-        decltype(auto) end() {
+        inline decltype(auto) end() {
             if (tuple) {
                 return tuple.end();
             } else {
                 return statement.end();
             }
         }
-        decltype(auto) end() const {
+        inline decltype(auto) end() const {
             if (tuple) {
                 return tuple.end();
             } else {

@@ -33,7 +33,7 @@
 
 
 namespace omtl {
-    size_t ParseTreeBuilder::findMatchingBracket(std::vector<Token>& tokens, size_t i) {
+    inline size_t ParseTreeBuilder::findMatchingBracket(std::vector<Token>& tokens, size_t i) {
         for (; i < tokens.size(); i++) {
             if (tokens[i].getRaw() == "[") break;
         }
@@ -51,7 +51,7 @@ namespace omtl {
         }
     }
 
-    bool ParseTreeBuilder::isTuple(std::vector<Token>& tokens, size_t i) {
+    inline bool ParseTreeBuilder::isTuple(std::vector<Token>& tokens, size_t i) {
         for (; i < tokens.size(); i++) {
             if (tokens[i].getRaw() == "[") break;
         }
@@ -73,7 +73,7 @@ namespace omtl {
         }
     }
 
-    Element ParseTreeBuilder::parseStatement(std::vector<Token>& tokens, size_t& i) {
+    inline Element ParseTreeBuilder::parseStatement(std::vector<Token>& tokens, size_t& i) {
         Element result;
         result.statement = std::deque<std::pair<std::string, Element>>();
         if (tokens.size() > i) result.location = tokens[i].location;
@@ -111,7 +111,7 @@ namespace omtl {
  [a: 1, b: 2, c: 3, d: [e: 4, f: 5 + 4],]
  ```
  */
-    Element ParseTreeBuilder::parseTuple(std::vector<Token>& tokens, size_t& i) {
+    inline Element ParseTreeBuilder::parseTuple(std::vector<Token>& tokens, size_t& i) {
         Element result;
         result.tuple = std::deque<std::pair<std::string, Element>>();
         for (; i < tokens.size(); i++) {
@@ -152,35 +152,35 @@ namespace omtl {
         return result;
     }
 
-    Element ParseTreeBuilder::buildParseTree(std::vector<Token> tokens) {
+    inline Element ParseTreeBuilder::buildParseTree(std::vector<Token> tokens) {
         tokens.insert(tokens.begin(), Token("[", "START"));
         tokens.push_back(Token("]", "END"));
         size_t startIndex = 0;
         return parseTuple(tokens, startIndex);
     }
 
-    Element::Element() {}
+    inline Element::Element() {}
 
-    Element::Element(Token v) {
+    inline Element::Element(Token v) {
         value = v;
         location = v.location;
     }
 
-    Element::Element(std::deque<std::pair<std::string, Element>> t) { tuple = t; }
+    inline Element::Element(std::deque<std::pair<std::string, Element>> t) { tuple = t; }
 
-    Element::Element(std::deque<Element> s) {
+    inline Element::Element(std::deque<Element> s) {
         statement = std::deque<std::pair<std::string, Element>>();
         for (size_t i = 0; i < s.size(); i++) { statement->push_back({std::to_string(i), s[i]}); }
     }
 
-    Element::Element(const Element& e) {
+    inline Element::Element(const Element& e) {
         tuple = e.tuple;
         statement = e.statement;
         value = e.value;
         location = e.location;
     }
 
-    std::string Element::getDiagnosticString() {
+    inline std::string Element::getDiagnosticString() {
         using namespace std;
         using namespace estd::string_util;
         if (this->tuple != nullptr) {
@@ -222,7 +222,7 @@ namespace omtl {
         return "unknown type";
     }
 
-    estd::clone_ptr<Element> Element::operator[](std::string name) {
+    inline estd::clone_ptr<Element> Element::operator[](std::string name) {
         Element& e = *this;
 
         if (e.tuple != nullptr) {
@@ -238,7 +238,7 @@ namespace omtl {
         return nullptr;
     }
 
-    estd::clone_ptr<Element> Element::operator[](size_t id) {
+    inline estd::clone_ptr<Element> Element::operator[](size_t id) {
         Element& e = *this;
         if (e.tuple != nullptr) {
             if (id >= e.tuple->size()) return nullptr;
@@ -250,7 +250,7 @@ namespace omtl {
         return nullptr;
     }
 
-    std::string Element::getLabel(size_t id) {
+    inline std::string Element::getLabel(size_t id) {
         Element& e = *this;
         if (e.tuple != nullptr) {
             if (id >= e.tuple->size())
@@ -261,7 +261,7 @@ namespace omtl {
         }
     }
 
-    size_t Element::size() {
+    inline size_t Element::size() {
         Element& e = *this;
         if (e.tuple != nullptr) {
             return e.tuple->size();
@@ -271,7 +271,7 @@ namespace omtl {
         return 0;
     }
 
-    bool Element::onlyContains(std::set<std::string> names) {
+    inline bool Element::onlyContains(std::set<std::string> names) {
         // TODO: make this work for statement (you can just use size currently)
         if (tuple == nullptr) return false;
         for (size_t i = 0; i < this->tuple->size(); i++) {
@@ -280,7 +280,7 @@ namespace omtl {
         return true;
     }
 
-    bool Element::contains(std::string name) {
+    inline bool Element::contains(std::string name) {
         if (tuple != nullptr) {
             for (size_t i = 0; i < this->tuple->size(); i++) {
                 if (this->tuple[i].first == name || name == std::to_string(i)) { return true; }
@@ -293,7 +293,7 @@ namespace omtl {
         return false;
     }
 
-    bool Element::contains(size_t id) {
+    inline bool Element::contains(size_t id) {
         if (this->tuple != nullptr) {
             if (id >= this->tuple->size()) return false;
             return true;
@@ -319,7 +319,7 @@ namespace omtl {
         }
     }
 
-    Element Element::popFront() {
+    inline Element Element::popFront() {
         if (tuple != nullptr) {
             Element t = tuple->front().second;
             tuple->pop_front();
@@ -334,8 +334,8 @@ namespace omtl {
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushFront(Element e) { pushFront("", e); }
-    void Element::pushFront(std::string n, Element e) {
+    inline void Element::pushFront(Element e) { pushFront("", e); }
+    inline void Element::pushFront(std::string n, Element e) {
         if (tuple != nullptr) {
             tuple->push_front({n, e});
             reindexTuple();
@@ -346,7 +346,7 @@ namespace omtl {
             reindexStatment();
         }
     }
-    Element Element::popBack() {
+    inline Element Element::popBack() {
         if (tuple != nullptr) {
             Element t = tuple->back().second;
             tuple->pop_back();
@@ -361,8 +361,8 @@ namespace omtl {
         }
         throw std::runtime_error("No elements to pop");
     }
-    void Element::pushBack(Element e) { pushBack("", e); }
-    void Element::pushBack(std::string n, Element e) {
+    inline void Element::pushBack(Element e) { pushBack("", e); }
+    inline void Element::pushBack(std::string n, Element e) {
         if (tuple != nullptr) {
             tuple->push_back({n, e});
             reindexTuple();
@@ -374,15 +374,15 @@ namespace omtl {
         }
     }
 
-    void Element::popBack(size_t n) {
+    inline void Element::popBack(size_t n) {
         for (size_t i = 0; i < n; i++) popBack();
     }
 
-    void Element::popFront(size_t n) {
+    inline void Element::popFront(size_t n) {
         for (size_t i = 0; i < n; i++) popFront();
     }
 
-    Element Element::slice(size_t left, size_t right) {
+    inline Element Element::slice(size_t left, size_t right) {
         Element copy = *this;
         if (tuple == nullptr && statement == nullptr) throw std::runtime_error("No elements to slice");
         if (right < size()) copy.popBack(size() - right);
@@ -391,31 +391,31 @@ namespace omtl {
     }
 
 
-    bool Element::isTuple() { return this->tuple != nullptr; }
-    bool Element::isStatement() { return this->statement != nullptr; }
-    bool Element::isToken() {
+    inline bool Element::isTuple() { return this->tuple != nullptr; }
+    inline bool Element::isStatement() { return this->statement != nullptr; }
+    inline bool Element::isToken() {
         Element& e = getSingleElement();
         return e.value != nullptr;
     }
 
-    bool Element::isString() { return isToken() && getToken().isString(); }
-    bool Element::isComment() { return isToken() && getToken().isComment(); }
-    bool Element::isName() { return isToken() && getToken().isName(); }
-    bool Element::isNumber() { return isToken() && getToken().isNumber(); }
-    bool Element::isValue() { return isToken() && getToken().isValue(); }
-    bool Element::isRaw() { return isToken(); }
+    inline bool Element::isString() { return isToken() && getToken().isString(); }
+    inline bool Element::isComment() { return isToken() && getToken().isComment(); }
+    inline bool Element::isName() { return isToken() && getToken().isName(); }
+    inline bool Element::isNumber() { return isToken() && getToken().isNumber(); }
+    inline bool Element::isValue() { return isToken() && getToken().isValue(); }
+    inline bool Element::isRaw() { return isToken(); }
 
-    Token Element::getToken() {
+    inline Token Element::getToken() {
         Element& e = getSingleElement();
         return e.value.value();
     }
-    std::string Element::getString() { return getToken().getString(); }
-    std::string Element::getEscapedString() { return getToken().getEscapedString(); }
-    std::string Element::getComment() { return getToken().getComment(); }
-    std::string Element::getName() { return getToken().getName(); }
-    estd::BigDec Element::getNumber() { return getToken().getNumber(); }
-    std::string Element::getValue() { return getToken().getValue(); }
-    std::string Element::getRaw() { return getToken().getRaw(); }
+    inline std::string Element::getString() { return getToken().getString(); }
+    inline std::string Element::getEscapedString() { return getToken().getEscapedString(); }
+    inline std::string Element::getComment() { return getToken().getComment(); }
+    inline std::string Element::getName() { return getToken().getName(); }
+    inline estd::BigDec Element::getNumber() { return getToken().getNumber(); }
+    inline std::string Element::getValue() { return getToken().getValue(); }
+    inline std::string Element::getRaw() { return getToken().getRaw(); }
     inline Element& Element::getSingleElement() {
         if (statement != nullptr && statement->size() == 1) { return statement[0].second; }
         return *this;

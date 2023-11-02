@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace omtl {
     class Token {
@@ -58,8 +59,8 @@ namespace omtl {
         uint8_t dataType = Token::name;
         std::string paddingAfter = "";
 
-        Token() {}
-        Token(std::string s) {
+        inline Token() {}
+        inline Token(std::string s) {
             rawValue = s;
             dataType = Token::name;
             if (rawValue.size() >= 2 && rawValue[0] == '\"' && rawValue[1] == '\"') dataType = Token::string;
@@ -71,17 +72,17 @@ namespace omtl {
                 } catch (...) { dataType = Token::name; } // failed to parse, not a number
             }
         }
-        Token(std::string s, std::string c) : Token(s) { location = c; }
+        inline Token(std::string s, std::string c) : Token(s) { location = c; }
 
         std::string getDiagnosticString();
         std::string getRaw();
         std::string getValue();
 
-        bool isString() { return dataType == Token::string; }
-        bool isComment() { return dataType == Token::comment; }
-        bool isName() { return dataType == Token::name; }
-        bool isNumber() { return dataType == Token::number; }
-        bool isValue() { return isString() || isNumber() || isName(); }
+        inline bool isString() { return dataType == Token::string; }
+        inline bool isComment() { return dataType == Token::comment; }
+        inline bool isName() { return dataType == Token::name; }
+        inline bool isNumber() { return dataType == Token::number; }
+        inline bool isValue() { return isString() || isNumber() || isName(); }
 
         std::string getString();
         std::string getEscapedString();

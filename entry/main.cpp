@@ -46,7 +46,7 @@ public:
 
 int main() {
     auto tokens = omtl::Tokenizer{}.tokenize("./text/in.omtl");
-    // for (auto& tok : tokens) std::cout << tok.getDiagnosticString() << std::endl;
+    //for (auto& tok : tokens) std::cout << tok.getDiagnosticString() << std::endl;
     auto rootElement = omtl::ParseTreeBuilder{}.buildParseTree(tokens);
     std::cout << rootElement.getDiagnosticString() << std::endl;
 
