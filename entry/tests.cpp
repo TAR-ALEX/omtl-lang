@@ -1,24 +1,58 @@
-#include <estd/UnitTest.h>
 #include <iostream>
-#include <omtl/language.h>
+#include <estd/UnitTest.h>
+#include <omtl/Language.hpp>
 
 int main() {
+
+    using namespace omtl;
     UnitTests test;
 
     test.testBlock({
-        OmtlObject oTest{
+        Object oTest{
             "Car",
             "bmw",
             {
-                new OmtlNumericObject{"numwheels", "4"},
-                new OmtlNumericObject{"numHorsepower", "250"},
-                new OmtlStringObject{"modelName", "330ci"},
-                new OmtlObject{
+                new NumericObject{"numwheels", "4"},
+                new NumericObject{"numHorsepower", "250"},
+                new StringObject{"modelName", "330ci"},
+                new Object{
                     "Reservoir",
                     "fuelTank",
                     {
-                        new OmtlNumericObject{"volumeLiters", "10"},
-                        new OmtlStringObject{"fluidType", "gasoline"},
+                        new NumericObject{"volumeLiters", "10"},
+                        new StringObject{"fluidType", "gasoline"},
+                    },
+                },
+            },
+        };
+
+        std::string target = "Car(bmw): [\n"
+                             "  Reservoir(fuelTank): [\n"
+                             "    String(fluidType): gasoline, \n"
+                             "    Number(volumeLiters): 10, \n"
+                             "  ], \n"
+                             "  String(modelName): 330ci, \n"
+                             "  Number(numHorsepower): 250, \n"
+                             "  Number(numwheels): 4, \n"
+                             "]";
+        std::cout << oTest.cppImplementStructures() << std::endl;
+        return oTest.toString() == target;
+    });
+
+    test.testBlock({
+        Object oTest{
+            "Car",
+            "bmw",
+            {
+                new NumericObject{"numwheels", "4"},
+                new NumericObject{"numHorsepower", "250"},
+                new StringObject{"modelName", "330ci"},
+                new Object{
+                    "Reservoir",
+                    "fuelTank",
+                    {
+                        new NumericObject{"volumeLiters", "10"},
+                        new StringObject{"fluidType", "gasoline"},
                     },
                 },
             },
@@ -40,24 +74,24 @@ int main() {
     test.testBlock({
         std::string inArgs;
         std::string outArgs;
-        OmtlFunction fTest{
+        Function fTest{
             "[x: Number, Number, y: String, z: [x: Number, y: String]]",
-            [&](OmtlObject* args) { outArgs = args->toString(); },
+            [&](Object* args) { outArgs = args->toString(); },
         };
 
-        cptr<OmtlObject> args = new OmtlObject{
+        cptr<Object> args = new Object{
             "Tuple",
             "arguments",
             {
-                new OmtlNumericObject{"0", 0},
-                new OmtlNumericObject{"x", 0},
-                new OmtlStringObject{"y", "testString"},
-                new OmtlObject{
+                new NumericObject{"0", 0},
+                new NumericObject{"x", 0},
+                new StringObject{"y", "testString"},
+                new Object{
                     "Tuple",
                     "z",
                     {
-                        new OmtlNumericObject{"x", "11"},
-                        new OmtlStringObject{"y", "testString2"},
+                        new NumericObject{"x", "11"},
+                        new StringObject{"y", "testString2"},
                     },
                 },
             },
@@ -71,26 +105,26 @@ int main() {
     });
 
     test.testBlock({
-        cptr<OmtlObject> args = new OmtlObject{
+        cptr<Object> args = new Object{
             "Tuple",
             "arguments",
             {
-                new OmtlNumericObject{"x", 0},
-                new OmtlStringObject{"y", "testString"},
-                new OmtlObject{
+                new NumericObject{"x", 0},
+                new StringObject{"y", "testString"},
+                new Object{
                     "Tuple",
                     "z",
                     {
-                        new OmtlNumericObject{"x", "11"},
-                        new OmtlStringObject{"y", "testString2"},
+                        new NumericObject{"x", "11"},
+                        new StringObject{"y", "testString2"},
                     },
                 },
             },
         };
         bool testFailed = false;
-        OmtlFunction fTest{
+        Function fTest{
             "[x: Number, y: String, z: [x: Number, y: String]]",
-            [&](OmtlObject* args) {
+            [&](Object* args) {
                 if (!args->publicMembers.count("x")) { testFailed = true; }
                 if (!args->publicMembers.count("y")) { testFailed = true; }
                 if (!args->publicMembers.count("z")) { testFailed = true; }
@@ -104,25 +138,25 @@ int main() {
     });
 
     test.testBlock({
-        cptr<OmtlObject> args = new OmtlObject{
+        cptr<Object> args = new Object{
             "Tuple",
             "arguments",
             {
-                new OmtlNumericObject{"x", 0},
-                new OmtlStringObject{"y", "testString"},
-                new OmtlObject{
+                new NumericObject{"x", 0},
+                new StringObject{"y", "testString"},
+                new Object{
                     "Tuple",
                     "z",
                     {
-                        new OmtlNumericObject{"x", "11"},
+                        new NumericObject{"x", "11"},
                     },
                 },
             },
         };
         bool testFailed = false;
-        OmtlFunction fTest{
+        Function fTest{
             "[x: Number, y: String, z: [x: Number, y: String]]",
-            [&](OmtlObject* args) { testFailed = true; },
+            [&](Object* args) { testFailed = true; },
         };
         try {
             fTest.call(args.get());

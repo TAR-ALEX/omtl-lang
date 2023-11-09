@@ -1,4 +1,3 @@
-#include "AutonameMap.h"
 #include <deque>
 #include <estd/ptr.hpp>
 #include <functional>
@@ -7,7 +6,7 @@
 #include <omtl/ParseTree.hpp>
 #include <omtl/Tokenizer.hpp>
 #include <sstream>
-#include <omtl/language.h>
+#include <omtl/Language.hpp>
 
 using namespace estd::shortnames;
 
