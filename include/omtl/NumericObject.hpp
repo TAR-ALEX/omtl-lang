@@ -8,7 +8,6 @@
 #include <omtl/Object.hpp>
 #include <omtl/ParseTree.hpp>
 #include <omtl/Tokenizer.hpp>
-#include <omtl/argumentMatching.h>
 #include <sstream>
 
 namespace omtl {
@@ -26,7 +25,7 @@ namespace omtl {
         }
         virtual std::string toString() { return type + "(" + name + "): " + data.toString(); }
 
-        virtual std::string cppImplementStructures() {
+        virtual std::string cppImplementStructure() {
             // FIXME: throw an error if this is called? This is a native construct and should already be declared
             return "int64_t " + name + " = 0;";
         }

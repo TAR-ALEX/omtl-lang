@@ -10,7 +10,7 @@
 
 #include <omtl/ParseTree.hpp>
 #include <omtl/Tokenizer.hpp>
-#include <omtl/AutonameMap.h>
+#include <omtl/AutonameMap.hpp>
 #include <omtl/StringObject.hpp>
 #include <omtl/NumericObject.hpp>
 

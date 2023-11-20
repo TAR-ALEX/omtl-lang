@@ -1,0 +1,42 @@
+
+Car: class [
+    public: [
+        gasolineOctane: Int [64] 0,
+        gasTankCapacity: Int 64 100,
+        gasBrand: String "Unknown",
+
+        drive: function [meters: Int 64] [success: Bool []] [
+            [meters > 100] ? [
+                success = false,
+                return,
+            ] !? [
+                this gasTankCapacity -= [meters / 2],
+                success = true,
+            ],
+            return,
+        ],
+    ],
+    private: [
+        engineHP: Int64 400,
+    ],
+    constructor: function [] [] [
+        this gasolineOctane = 93,
+        gasTankCapacity = 0,
+        this gasBrand = "local",
+        return
+    ],
+    destructor: function [] [] [],
+
+    function [] [] [],
+    function [] [] [],
+],
+
+
+FunctorSample: functor [
+    function [] [out: Car] [
+
+    ],
+    function [x: Int64] [out: Car] [
+
+    ],
+],

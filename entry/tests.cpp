@@ -35,7 +35,7 @@ int main() {
                              "  Number(numHorsepower): 250, \n"
                              "  Number(numwheels): 4, \n"
                              "]";
-        std::cout << oTest.cppImplementStructures() << std::endl;
+        std::cout << oTest.cppImplementStructure() << std::endl;
         return oTest.toString() == target;
     });
 

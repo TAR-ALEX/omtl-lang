@@ -5,11 +5,11 @@
 #include <functional>
 #include <iostream>
 #include <map>
-#include <omtl/AutonameMap.h>
+#include <omtl/AutonameMap.hpp>
 #include <omtl/ParseTree.hpp>
 #include <omtl/Tokenizer.hpp>
-#include <omtl/argumentMatching.h>
 #include <sstream>
+#include <string>
 
 namespace omtl {
     const std::string indentation = "  ";
@@ -37,7 +37,7 @@ namespace omtl {
         // Objects can take arguments. in tuples or by passing a single object to its right.
         // Without the tuple syntax there can be some ambiguity. (a possible solution is to not allow parameters without tuples if there are member variables/functions)
         // This basically makes the functors a special case.
-        inline Object() : name("Null"), type("Null") {}
+        inline Object() : name(""), type("Null") {}
         inline Object(
             std::string type,
             std::string name,
@@ -47,10 +47,10 @@ namespace omtl {
             name(name),
             type(type), privateMembers(privateMembers), publicMembers(publicMembers) {}
 
-        virtual cptr<Object> call(cptr<Object> passed) {
+        virtual std::tuple<std::string, cptr<Object>> cppCall(cptr<Object> passed) {
             // error cannot call this object
             //FIXME: add return type
-            return new Object();
+            return {"", new Object()};
         }
 
 
@@ -64,7 +64,11 @@ namespace omtl {
             return type + "(" + name + "): [\n" + estd::string_util::indent(ss.str(), indentation) + "]";
         }
 
-        virtual std::string cppImplementStructures() {
+        virtual std::string cppDeclareStructures() {
+            return "struct " + type + ";";
+        }
+
+        virtual std::string cppImplementStructure() {
             std::stringstream ss;
 
             for (auto& [k, v] : publicMembers) { ss << v->cppCreateInstance() << " " << std::endl; }
