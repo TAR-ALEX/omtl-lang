@@ -18,3 +18,5 @@
 #include <omtl/NumericObject.hpp>
 #include <omtl/Function.hpp>
 #include <omtl/CodeGen.hpp>
+
+#include <omtl/CppClass.hpp>

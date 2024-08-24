@@ -1,12 +1,58 @@
-#include <iostream>
 #include <estd/UnitTest.h>
+#include <iostream>
 #include <omtl/Language.hpp>
 
 int main() {
-
     using namespace omtl;
     UnitTests test;
 
+    test.testBlock({
+        CppClass intg{"int"};
+
+        CppClass c{
+            "Human",
+            {
+                CppObject{intg, "arms"},
+                CppObject{intg, "legs"},
+            }
+        };
+
+        auto instance = CppObject{c, "test"};
+
+        std::string out = c.cppImplement();
+        std::string target = "class Human {\n  int arms; \n  int legs; \n};";
+        return out == target && instance.cppGetMember("arms")->cppReference() == "(test.arms)";
+    });
+    test.testBlock({
+        CppClass intg{"int"};
+
+        CppFunction c{
+            "main",
+
+            {CppObject{intg, "arg1"}, CppObject{intg, "arg2"}},
+            {CppObject{intg, "ret1"}},
+
+        };
+
+        std::string out = c.cppDeclare();
+        std::string target = "void main(int arg1, int arg2, int * ret1);";
+        return out == target;
+    });
+    test.testBlock({
+        CppClass intg{"int"};
+
+        CppFunction c{
+            "main",
+
+            {CppObject{intg, "arg1"}, CppObject{intg, "arg2"}},
+            {CppObject{intg, "ret1"}},
+            "ret1 = arg1 + arg2;\nret1 = ret1 * arg2;"
+        };
+
+        std::string out = c.cppImplement();
+        std::string target = "void main(int arg1, int arg2, int * ret1){\n  ret1 = arg1 + arg2;\n  ret1 = ret1 * arg2;\n};";
+        return out == target;
+    });
     test.testBlock({
         Object oTest{
             "Car",
@@ -35,7 +81,6 @@ int main() {
                              "  Number(numHorsepower): 250, \n"
                              "  Number(numwheels): 4, \n"
                              "]";
-        std::cout << oTest.cppImplementStructure() << std::endl;
         return oTest.toString() == target;
     });
 
