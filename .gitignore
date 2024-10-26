@@ -1,6 +1,7 @@
 /build/
 /example
 /vendor/
+/vendor-mod-old/
 /tables
 /omtl-cc
 /omtl-cc_TESTS

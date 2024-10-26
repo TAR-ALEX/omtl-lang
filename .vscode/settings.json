@@ -84,6 +84,18 @@
         "strstream": "cpp",
         "charconv": "cpp",
         "csignal": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "__locale": "cpp",
+        "__node_handle": "cpp",
+        "__tree": "cpp",
+        "__verbose_abort": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "print": "cpp",
+        "queue": "cpp",
+        "*.example": "c",
+        "*.inc": "cpp",
+        "__split_buffer": "cpp",
+        "__bit_reference": "cpp"
     }
 }
