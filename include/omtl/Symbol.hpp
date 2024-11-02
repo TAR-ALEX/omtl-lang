@@ -6,25 +6,25 @@
 #include <string>
 
 namespace omtl {
-    class Object;
+    class Macro;
     class Function;
     //typedef std::deque<std::string> FunctionSignature;
-    typedef std::deque<std::pair<std::string, Object>> FunctionArguments;
+    typedef std::deque<std::pair<std::string, Macro>> FunctionArguments;
 
-    class Object {
+    class Macro {
     public:
-        std::string object_id; 
-        std::map<std::string, Object> members;
-        std::function<Object(FunctionArguments)> onCall;
+        std::string macro_id; 
+        std::map<std::string, Macro> members;
+        std::function<Macro(FunctionArguments)> onCall;
 
-        Object(
-            std::map<std::string, Object> members,
-            std::function<Object(FunctionArguments)> onCall
+        Macro(
+            std::map<std::string, Macro> members,
+            std::function<Macro(FunctionArguments)> onCall
         );
 
-        Object(std::function<Object(FunctionArguments)> onCall);
-        Object();
+        Macro(std::function<Macro(FunctionArguments)> onCall);
+        Macro();
 
-        Object call(FunctionArguments passedArgs);
+        Macro call(FunctionArguments passedArgs);
     };
 }; // namespace omtl

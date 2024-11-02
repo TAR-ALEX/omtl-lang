@@ -7,8 +7,8 @@ int main() {
     UnitTests test;
 
     test.testBlock({
-        omtl::Object obj1;
-        omtl::Object obj2;
+        omtl::Macro obj1;
+        omtl::Macro obj2;
         
         return true;
     });

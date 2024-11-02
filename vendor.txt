@@ -10,6 +10,6 @@ git "https://github.com/TAR-ALEX/EstdUnitTests" master "./include/" "./vendor/in
 
 git "https://github.com/TAR-ALEX/omtl_parser_cpp.git" master "./include/" "./vendor/include/",
 
-(tar "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04.tar.xz" 
+tar "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04.tar.xz" 
 "./clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/" 
-"./vendor/llvm/",)
+"./vendor/llvm/",

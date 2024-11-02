@@ -7,7 +7,8 @@
 namespace omtl {
     extern std::map<std::string, std::string> stringLiteralMap;
     extern std::map<std::string, estd::BigDecimal> numericLiteralMap;
-    omtl::Object StringLiteral(std::string s);
+    omtl::Macro StringLiteral(std::string s);
 
-    omtl::Object NumberLiteral(estd::BigDecimal num);
+    omtl::Macro NumberLiteral(estd::BigDecimal num);
+    omtl::Macro NullMacro();
 }; // namespace omtl

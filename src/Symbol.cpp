@@ -12,18 +12,18 @@ namespace{
 
 namespace omtl {
 
-    Object Object::call(FunctionArguments passedArgs) {
+    Macro Macro::call(FunctionArguments passedArgs) {
         return onCall(passedArgs);
     }
 
-    Object::Object(
-        std::map<std::string, Object> members,
-        std::function<Object(FunctionArguments)> onCall = [](FunctionArguments){throw std::runtime_error("onCall is undefined"); return omtl::Object{};}
-    ) : object_id(getNextSymbolID()), members(members), onCall(onCall) {}
+    Macro::Macro(
+        std::map<std::string, Macro> members,
+        std::function<Macro(FunctionArguments)> onCall = [](FunctionArguments){throw std::runtime_error("onCall is undefined"); return omtl::Macro{};}
+    ) : macro_id(getNextSymbolID()), members(members), onCall(onCall) {}
 
-    Object::Object(
-        std::function<Object(FunctionArguments)> onCall
-    ) : object_id(getNextSymbolID()), members({}), onCall(onCall) {}
+    Macro::Macro(
+        std::function<Macro(FunctionArguments)> onCall
+    ) : macro_id(getNextSymbolID()), members({}), onCall(onCall) {}
 
-    Object::Object() : object_id(getNextSymbolID()), onCall([](FunctionArguments){throw std::runtime_error("onCall is undefined"); return omtl::Object{};}) {}
+    Macro::Macro() : macro_id(getNextSymbolID()), onCall([](FunctionArguments){throw std::runtime_error("onCall is undefined"); return omtl::Macro{};}) {}
 }; // namespace omtl
